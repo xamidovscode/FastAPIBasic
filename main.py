@@ -1,14 +1,17 @@
-from fastapi import FastAPI
+from typing import List
+from fastapi import FastAPI, Request, status
+from responcible_models import models
 
 app = FastAPI(
     title="Test Project"
 )
 
-
 users = [
-    {"id": 1, "role": 'student', 'name': "Shohjahon"},
+    {"id": 1, "role": 'student', 'name': ["Shohjahon"]},
     {"id": 2, "role": 'student', 'name': "Shohjahon"},
-    {"id": 3, "role": 'student', 'name': "Shohjahon"}
+    {"id": 3, "role": 'student', 'name': "Shohjahon", "position": [{
+        "id": 1, "position": "middle", "experience": "2 -years"
+}]}
 ]
 
 
@@ -26,11 +29,6 @@ def get_hello():
     return "Hello World"
 
 
-@app.get("/users/{user_id}")
-def get_users(user_id: int):
-    return [user for user in users if user.get('id') == user_id]
-
-
 @app.get("/data/")
 def get_data(limit: int = 1, offset: int = 0):
     return data[offset:][:limit]
@@ -42,3 +40,13 @@ def change_username(user_id: int, name: str):
     current_user['name'] = name
     return {"status": 200, "data": current_user}
 
+
+@app.get("/users/{user_id}", response_model=List[models.User])
+def get_users(user_id: int):
+    return [user for user in users if user.get('id') == user_id]
+
+
+@app.post("/add_user/")
+def add_users(new_users: List[models.User]):
+    users.extend(new_users)
+    return {"status": 200, "data": users}
