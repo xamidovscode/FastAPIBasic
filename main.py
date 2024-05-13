@@ -39,5 +39,6 @@ def get_data(limit: int = 1, offset: int = 0):
 @app.post("/users/{user_id}/")
 def change_username(user_id: int, name: str):
     current_user = [user for user in users if user.get('id') == user_id][0]
+    current_user['name'] = name
     return {"status": 200, "data": current_user}
 
